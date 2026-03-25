@@ -1,0 +1,75 @@
+Jeg vil lave en PoC på en web app til at forbedre billeder (foto) af rum fra boligannoncer.
+
+Formålet er at sælge boliger bedre, hurtigere og for flere penge, ved at forbedre det visuelle indtryk af boligen og "sælge drømmen".
+Ikke hvordan boligen ser ud i dag, men hvordan den KAN se ud.
+
+I det følgende dækker ordet "objekt" over bl.a. tøj, brugsgenstande, møbler, kunst, tæpper o.s.v.
+
+App har et simpelt state-less flow (Wizard like):
+
+Step 1:
+1. bruger uploader et billede af et rum fra boligannoncen
+1. (Optional) bruger skriver ønsker til rummet, f.eks. en bestemt farvepalette eller målsætning (sælg til rige mennesker, unge mennesker, etc.) i et freetext felt.
+1. (Optional) hvis bruger lige har afsluttet generering af et andet rum (trykker "Nyt rum" på step 4), så er ønsker automatisk udfyldt med noget der holder stilen. 
+1. Bruger trykker "Next"
+
+Step 2:
+1. app analyserer billede og foreslår forbedringer indenfor følgende kategorier:
+    - Navn på rum (bruges som overskrift og som titel på fil hvis bruger ender med at downloade i step 3)
+    - Maling af væg: anbefaling af en farver der virker godt for rummet
+    - Oprydning: fjerne objekter fra billedet der trækker indtrykket ned, f.eks. en gammel slidt sofa
+    - Indretning: tilføje objekter til billedet der trækker indtrykket op, f.eks. en ny rød 2-personers sofa
+    - For hver kategori anbefaler den overordnet om denne kategori er nødvendig eller ej
+1. app viser forbedringsforslag i tre text felter, som kan aktiveres/deaktiveres separate (default: toggle følger anbefaling af nødvendighed):
+    - Maling: freetext beskrivelse af anbefalet farve til væggen
+    - Oprydning: freetext beskrivelse af objekter der skal ryddes op/fjernes
+    - Indretning: freetext beskrivelse af 
+1. bruger godkender/modificerer anbefalede ændringer og har mulighed for at skrive en custom prompt.
+    - Bruger foretager ændringer af anbefalinger, f.eks. skifter farve til maling, deaktiverer maling helt, skriver en custom prompt
+    - Bruger trykker "Next"
+Step 3:
+1. app genererer 1 billede der matcher specifikationen
+1. Viser en spinner af en art
+
+Step 4:
+1. App viser billedet til brugeren
+1. Bruger kan downloade via en download-knap. Navn på fil er som default navnet fra trin 2. 
+1. Hvis brugeren ikke kan lide det kan de trykke "Back" og ændre indstillinger
+1. Hvis bruger er tilfredse kan de trykke "Nyt rum", hvilket starter wizard fra step 1.
+    - Ønskefelter bliver automatisk udfyldt så stilen på næste billede er konsistent.
+
+Constraints:
+- App skal bevare rummets dimensioner og strukturelle indretning (vinduer, gulve, døre, vægge, etc.), som det ser ud på original foto.
+- App skal kun male vægge, ikke stuk, fodpaneler, vægpaneler, vindueskarme etc. Den skal male alle vægge.
+- App skal bevare kameravinkel fra originalfoto.
+- App skal bevare aspect ratio fra originalbillede.
+
+Målsætninger:
+- Farvekoordinerede forbedringer, så f.eks. farve på møbler matcher farve på væg.
+
+Teknisk:
+- Skriv en datamodel for config for anbefalinger
+- Brug GPT til at generere anbefalinger (JSON) fra billede
+- Brug Replicate/nano-banana til at generere det færdige billede
+- Brug GPT til at auto-udfylde ønske felt (Step 1) når bruger trykker "Nyt rum" i step 4.
+- Byg app i Next.js
+- Lav github action der bygger docker image (app bliver senere deployed til Coolify via Docker).
+- Mulighed for at køre lokalt via .env files og npm run local
+- Ikke muligt at leake API keys i UI. Kald til AI tjenester foregår via Next.js backend.
+- Grundlæggende sikkerhed, men ingen authentication. Adgang er sikret med obskur URL på deployment. 
+
+Mulighed for konfiguration, via environment variables, vises ikke i UI:
+- OPENAI_API_KEY
+- REPLICATE_API_KEY
+- PROMPT template med placeholders for maling, oprydning, indretning, ønsker og hardcoded constraints (svarende til constraints ovenfor).
+
+
+Out of scope:
+- Rigtige møbler til indretning. Lad nano-banana opfinde møbler
+- Rigtig maling. Lad nano-banana fortolke free text farver, såsom "Mint grøn".
+
+Future work:
+- Vælg rigtige farver fra Flügger 80
+- Mulighed for at indsætte rigtige møbler fra rigtige møbelbutikker (IKEA, Ilva, etc.) 
+- Hent priser for farver og møbler
+- Mulighed for at sætte max. budget for indretning.

@@ -1,0 +1,69 @@
+/**
+ * Placeholders i IMAGE_PROMPT_TEMPLATE (env):
+ * {{ONSKE}} — brugerens ønsker fra step 1
+ * {{MALING}} — malingstekst eller tomt
+ * {{OPRYDNING}} — oprydningstekst eller tomt
+ * {{INDRETNING}} — indretningstekst eller tomt
+ * {{BRUGER_CUSTOM}} — brugerens custom prompt (step 2)
+ * {{CONSTRAINTS}} — indhold fra IMAGE_PROMPT_CONSTRAINTS (env)
+ */
+
+import {
+  getImagePromptConstraints,
+  getImagePromptTemplate,
+} from "@/lib/server-config";
+
+export function applyImagePromptTemplate(vars: {
+  onske: string;
+  maling: string;
+  oprydning: string;
+  indretning: string;
+  brugerCustom: string;
+}): string {
+  const constraints = getImagePromptConstraints();
+  let t = getImagePromptTemplate();
+  const map: Record<string, string> = {
+    ONSKE: vars.onske,
+    MALING: vars.maling,
+    OPRYDNING: vars.oprydning,
+    INDRETNING: vars.indretning,
+    BRUGER_CUSTOM: vars.brugerCustom,
+    CONSTRAINTS: constraints,
+  };
+  for (const [key, val] of Object.entries(map)) {
+    t = t.split(`{{${key}}}`).join(val);
+  }
+  return t.replace(/\{\{([A-Z_]+)\}\}/g, (_, name: string) => map[name] ?? "");
+}
+
+export function buildCategoryBlocks(spec: {
+  enablePaint: boolean;
+  paintDescription: string;
+  enableCleanup: boolean;
+  cleanupDescription: string;
+  enableFurnishing: boolean;
+  furnishingDescription: string;
+}): { maling: string; oprydning: string; indretning: string } {
+  const maling =
+    spec.enablePaint && spec.paintDescription.trim()
+      ? spec.paintDescription.trim()
+      : spec.enablePaint
+        ? "(Ingen konkret farvebeskrivelse — vælg passende farver til rummet.)"
+        : "(Ingen ændring af vægfarve.)";
+
+  const oprydning =
+    spec.enableCleanup && spec.cleanupDescription.trim()
+      ? spec.cleanupDescription.trim()
+      : spec.enableCleanup
+        ? "(Fjern generelt det der trækker indtrykket ned.)"
+        : "(Ingen oprydning eller fjernelse af objekter.)";
+
+  const indretning =
+    spec.enableFurnishing && spec.furnishingDescription.trim()
+      ? spec.furnishingDescription.trim()
+      : spec.enableFurnishing
+        ? "(Tilføj passende møbler og styling der løfter rummet.)"
+        : "(Ingen tilføjelse af nye møbler eller genstande.)";
+
+  return { maling, oprydning, indretning };
+}
