@@ -4,6 +4,7 @@ import { applyImagePromptTemplate, buildCategoryBlocks } from "@/lib/prompt-temp
 import { getReplicateImageModel } from "@/lib/server-config";
 import { generationSpecSchema } from "@/lib/room-recommendations";
 import { nearestReplicateAspectRatio } from "@/lib/aspect-ratio";
+import { getWallPaintColorById } from "@/lib/wall-paint-palette";
 
 export const runtime = "nodejs";
 /** Lang billedgenerering + Replicate long-poll; skal overstige platform default (~60s). */
@@ -56,13 +57,18 @@ export async function POST(request: Request) {
     }
 
     const spec = generationSpecSchema.parse(specJson);
+    if (spec.enablePaint) {
+      if (!spec.paintColorId || !getWallPaintColorById(spec.paintColorId)) {
+        return NextResponse.json({ error: "Vælg en gyldig vægfarve." }, { status: 400 });
+      }
+    }
     const w = Number(widthStr) || 0;
     const h = Number(heightStr) || 0;
     const aspectRatio = nearestReplicateAspectRatio(w, h);
 
     const { maling, oprydning, indretning } = buildCategoryBlocks({
       enablePaint: spec.enablePaint,
-      paintDescription: spec.paintDescription,
+      paintColorId: spec.paintColorId,
       enableCleanup: spec.enableCleanup,
       cleanupDescription: spec.cleanupDescription,
       enableFurnishing: spec.enableFurnishing,

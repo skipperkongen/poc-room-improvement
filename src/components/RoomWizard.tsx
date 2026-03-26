@@ -3,6 +3,11 @@
 import { useCallback, useState } from "react";
 import type { RoomAnalysis } from "@/lib/room-recommendations";
 import { shrinkImageFile, sanitizeFilenameBase } from "@/lib/image-client";
+import {
+  DEFAULT_WALL_PAINT_ID,
+  WALL_PAINT_PALETTE,
+  type WallPaintColor,
+} from "@/lib/wall-paint-palette";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -11,6 +16,87 @@ const initialToggles = (a: RoomAnalysis) => ({
   cleanup: a.cleanup.necessary,
   furnishing: a.furnishing.necessary,
 });
+
+/** Samme rækkefølge som i paletten — fra lyst/neutralt mod farvede accenter */
+const PAINT_FAMILY_ORDER = [
+  "Hvid og off-white",
+  "Greige og sand",
+  "Salvie og grøn",
+  "Blå og blågrå",
+  "Varme toner",
+] as const;
+
+const PAINT_BY_FAMILY: Map<string, WallPaintColor[]> = (() => {
+  const m = new Map<string, WallPaintColor[]>();
+  for (const c of WALL_PAINT_PALETTE) {
+    const arr = m.get(c.family) ?? [];
+    arr.push(c);
+    m.set(c.family, arr);
+  }
+  return m;
+})();
+
+function PaintColorSelector({
+  disabled,
+  selectedId,
+  onSelect,
+}: {
+  disabled: boolean;
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div
+      className={`space-y-8 ${disabled ? "pointer-events-none select-none opacity-45" : ""}`}
+      role="group"
+      aria-label="Vælg vægfarve"
+    >
+      {PAINT_FAMILY_ORDER.map((family) => {
+        const colors = PAINT_BY_FAMILY.get(family);
+        if (!colors?.length) return null;
+        return (
+          <div key={family} className="space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              {family}
+            </h3>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {colors.map((c) => {
+                const selected = c.id === selectedId;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => onSelect(c.id)}
+                    aria-pressed={selected}
+                    disabled={disabled}
+                    className={`rounded-lg border border-zinc-200 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:border-zinc-700 ${
+                      selected
+                        ? "ring-2 ring-emerald-600 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950"
+                        : "hover:border-zinc-400 dark:hover:border-zinc-500"
+                    }`}
+                  >
+                    <div
+                      className="aspect-[4/3] w-full rounded-t-md border-b border-zinc-200 dark:border-zinc-700"
+                      style={{ backgroundColor: c.hex }}
+                    />
+                    <div className="space-y-0.5 px-2 py-2">
+                      <p className="text-sm font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
+                        {c.name}
+                      </p>
+                      <p className="font-mono text-xs text-zinc-500 tabular-nums dark:text-zinc-400">
+                        {c.hex}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function RoomWizard() {
   const [step, setStep] = useState<Step>(1);
@@ -24,7 +110,7 @@ export function RoomWizard() {
   const [enablePaint, setEnablePaint] = useState(true);
   const [enableCleanup, setEnableCleanup] = useState(true);
   const [enableFurnishing, setEnableFurnishing] = useState(true);
-  const [paintText, setPaintText] = useState("");
+  const [selectedPaintId, setSelectedPaintId] = useState<string>(DEFAULT_WALL_PAINT_ID);
   const [cleanupText, setCleanupText] = useState("");
   const [furnishingText, setFurnishingText] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
@@ -108,7 +194,7 @@ export function RoomWizard() {
       setEnablePaint(t.paint);
       setEnableCleanup(t.cleanup);
       setEnableFurnishing(t.furnishing);
-      setPaintText(a.paint.recommendation);
+      setSelectedPaintId(DEFAULT_WALL_PAINT_ID);
       setCleanupText(a.cleanup.recommendation);
       setFurnishingText(a.furnishing.recommendation);
       setStep(2);
@@ -121,6 +207,10 @@ export function RoomWizard() {
 
   const submitStep2 = async () => {
     if (!file || !analysis) return;
+    if (enablePaint && !selectedPaintId.trim()) {
+      setError("Vælg en vægfarve.");
+      return;
+    }
     setError(null);
     setResultUrl(null);
     setStep(3);
@@ -131,7 +221,7 @@ export function RoomWizard() {
         enablePaint,
         enableCleanup,
         enableFurnishing,
-        paintDescription: paintText,
+        paintColorId: enablePaint ? selectedPaintId : null,
         cleanupDescription: cleanupText,
         furnishingDescription: furnishingText,
         customPrompt,
@@ -254,11 +344,10 @@ export function RoomWizard() {
                 />
               </button>
             </div>
-            <textarea
-              className="min-h-[72px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+            <PaintColorSelector
               disabled={!enablePaint}
-              value={paintText}
-              onChange={(e) => setPaintText(e.target.value)}
+              selectedId={selectedPaintId}
+              onSelect={setSelectedPaintId}
             />
           </div>
 

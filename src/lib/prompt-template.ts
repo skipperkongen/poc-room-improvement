@@ -12,6 +12,7 @@ import {
   getImagePromptConstraints,
   getImagePromptTemplate,
 } from "@/lib/server-config";
+import { resolvePaintMalingLine } from "@/lib/wall-paint-palette";
 
 export function applyImagePromptTemplate(vars: {
   onske: string;
@@ -38,18 +39,13 @@ export function applyImagePromptTemplate(vars: {
 
 export function buildCategoryBlocks(spec: {
   enablePaint: boolean;
-  paintDescription: string;
+  paintColorId: string | null;
   enableCleanup: boolean;
   cleanupDescription: string;
   enableFurnishing: boolean;
   furnishingDescription: string;
 }): { maling: string; oprydning: string; indretning: string } {
-  const maling =
-    spec.enablePaint && spec.paintDescription.trim()
-      ? spec.paintDescription.trim()
-      : spec.enablePaint
-        ? "(Ingen konkret farvebeskrivelse — vælg passende farver til rummet.)"
-        : "(Ingen ændring af vægfarve.)";
+  const maling = resolvePaintMalingLine(spec.enablePaint, spec.paintColorId);
 
   const oprydning =
     spec.enableCleanup && spec.cleanupDescription.trim()

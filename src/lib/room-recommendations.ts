@@ -25,7 +25,8 @@ export const generationSpecSchema = z.object({
   enablePaint: z.boolean(),
   enableCleanup: z.boolean(),
   enableFurnishing: z.boolean(),
-  paintDescription: z.string(),
+  /** Valgt farve fra paletten; null når maling er slået fra */
+  paintColorId: z.string().nullable(),
   cleanupDescription: z.string(),
   furnishingDescription: z.string(),
   customPrompt: z.string(),
