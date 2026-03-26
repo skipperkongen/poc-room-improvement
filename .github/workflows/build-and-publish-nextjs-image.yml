@@ -19,7 +19,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # Change this to whatever image name you prefer for your app
-  IMAGE_NAME: ${{ github.repository }}/room-improvement
+  IMAGE_NAME: ${{ github.repository }}/app
 
 jobs:
   build-and-push:
