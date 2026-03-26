@@ -30,7 +30,6 @@ export const generationSpecSchema = z.object({
   cleanupDescription: z.string(),
   furnishingDescription: z.string(),
   customPrompt: z.string(),
-  wishes: z.string(),
 });
 
 export type GenerationSpec = z.infer<typeof generationSpecSchema>;

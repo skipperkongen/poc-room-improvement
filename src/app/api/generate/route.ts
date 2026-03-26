@@ -76,7 +76,6 @@ export async function POST(request: Request) {
     });
 
     const prompt = applyImagePromptTemplate({
-      onske: spec.wishes.trim(),
       maling,
       oprydning,
       indretning,

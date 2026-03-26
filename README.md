@@ -21,7 +21,7 @@ API-nøgler bruges kun på serveren (Next.js route handlers).
 | Variabel | Beskrivelse |
 |----------|-------------|
 | `OPENAI_API_KEY` | Påkrævet |
-| `OPENAI_MODEL` | Påkrævet — bruges til analyse og “Nyt rum”-ønsker (fx `gpt-4o`) |
+| `OPENAI_MODEL` | Påkrævet — bruges til analyse (fx `gpt-4o`) |
 | `REPLICATE_API_KEY` | Påkrævet |
 | `REPLICATE_IMAGE_MODEL` | Påkrævet — fx `google/nano-banana` |
 | `IMAGE_PROMPT_TEMPLATE` | Påkrævet — se placeholders i `.env.example` |
@@ -45,5 +45,4 @@ GitHub Actions bygger Docker-imaget ved push/PR (uden push til registry).
 - `src/lib/room-recommendations.ts` — datamodel (Zod) for analyse og generering
 - `src/app/api/analyze` — GPT vision → JSON-anbefalinger
 - `src/app/api/generate` — prompt fra skabelon + Replicate
-- `src/app/api/refill-wishes` — GPT-tekst til “Nyt rum”
 - `src/components/RoomWizard.tsx` — wizard UI

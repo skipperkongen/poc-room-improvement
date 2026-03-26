@@ -7,14 +7,13 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const SYSTEM = `Du er ekspert i boligfotos og boligstyling til annoncer.
-Analyser billedet og brugerens fritekst-ønsker (kan være tom).
+Analyser billedet.
 Returner KUN gyldig JSON med præcis den struktur brugeren beder om — ingen markdown, ingen kommentarer.`;
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("image");
-    const wishes = String(formData.get("wishes") ?? "");
 
     if (!(file instanceof File) || file.size === 0) {
       return NextResponse.json({ error: "Manglende billede" }, { status: 400 });
@@ -24,9 +23,7 @@ export async function POST(request: Request) {
     const mime = file.type || "image/jpeg";
     const dataUrl = `data:${mime};base64,${buffer.toString("base64")}`;
 
-    const userPrompt = `Brugerens ønsker (kan være tomme): "${wishes.replace(/"/g, '\\"')}"
-
-Returner JSON med denne struktur:
+    const userPrompt = `Returner JSON med denne struktur:
 {
   "roomName": "kort dansk navn på rummet, fx Stue, Soveværelse, Køkken",
   "paint": { "necessary": boolean, "recommendation": "kort konkret anbefaling på dansk — farver til vægge der passer til rummet" },

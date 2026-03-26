@@ -1,11 +1,12 @@
 /**
  * Placeholders i IMAGE_PROMPT_TEMPLATE (env):
- * {{ONSKE}} — brugerens ønsker fra step 1
  * {{MALING}} — malingstekst eller tomt
  * {{OPRYDNING}} — oprydningstekst eller tomt
  * {{INDRETNING}} — indretningstekst eller tomt
  * {{BRUGER_CUSTOM}} — brugerens custom prompt (step 2)
  * {{CONSTRAINTS}} — indhold fra IMAGE_PROMPT_CONSTRAINTS (env)
+ *
+ * Ubrugte placeholders (fx ældre {{ONSKE}} i env) erstattes med tom streng.
  */
 
 import {
@@ -15,7 +16,6 @@ import {
 import { resolvePaintMalingLine } from "@/lib/wall-paint-palette";
 
 export function applyImagePromptTemplate(vars: {
-  onske: string;
   maling: string;
   oprydning: string;
   indretning: string;
@@ -24,7 +24,6 @@ export function applyImagePromptTemplate(vars: {
   const constraints = getImagePromptConstraints();
   let t = getImagePromptTemplate();
   const map: Record<string, string> = {
-    ONSKE: vars.onske,
     MALING: vars.maling,
     OPRYDNING: vars.oprydning,
     INDRETNING: vars.indretning,

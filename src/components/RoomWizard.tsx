@@ -100,7 +100,6 @@ function PaintColorSelector({
 
 export function RoomWizard() {
   const [step, setStep] = useState<Step>(1);
-  const [wishes, setWishes] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [width, setWidth] = useState(0);
@@ -146,27 +145,8 @@ export function RoomWizard() {
     }
   };
 
-  const goStep1NewRoom = async () => {
+  const goStep1NewRoom = () => {
     setError(null);
-    setLoading(true);
-    try {
-      const res = await fetch("/api/refill-wishes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          previousRoomName: roomName || "Rum",
-          previousWishes: wishes,
-          previousCustomPrompt: customPrompt,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Kunne ikke udfylde ønsker");
-      setWishes(typeof data.wishes === "string" ? data.wishes : "");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Fejl");
-    } finally {
-      setLoading(false);
-    }
     resetFilePreview();
     setAnalysis(null);
     setResultUrl(null);
@@ -183,7 +163,6 @@ export function RoomWizard() {
     try {
       const fd = new FormData();
       fd.append("image", file);
-      fd.append("wishes", wishes);
       const res = await fetch("/api/analyze", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Analyse fejlede");
@@ -225,7 +204,6 @@ export function RoomWizard() {
         cleanupDescription: cleanupText,
         furnishingDescription: furnishingText,
         customPrompt,
-        wishes,
       };
       const fd = new FormData();
       fd.append("image", file);
@@ -292,17 +270,6 @@ export function RoomWizard() {
               <img src={previewUrl} alt="Forhåndsvisning" className="max-h-80 w-full object-contain" />
             </div>
           )}
-          <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Ønsker (valgfrit)
-            </span>
-            <textarea
-              className="min-h-[100px] rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm placeholder:text-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
-              placeholder="Fx farvepalet, målgruppe, stemning …"
-              value={wishes}
-              onChange={(e) => setWishes(e.target.value)}
-            />
-          </label>
           <button
             type="button"
             disabled={loading || !file}
@@ -478,7 +445,6 @@ export function RoomWizard() {
             </button>
             <button
               type="button"
-              disabled={loading}
               className="rounded-lg border border-emerald-700 px-5 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-200 dark:hover:bg-emerald-950/40"
               onClick={goStep1NewRoom}
             >

@@ -1,5 +1,5 @@
-import { RoomWizard } from "@/components/RoomWizard";
+import { RoomWizardGate } from "@/components/RoomWizardGate";
 
 export default function Home() {
-  return <RoomWizard />;
+  return <RoomWizardGate />;
 }

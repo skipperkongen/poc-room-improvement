@@ -9,8 +9,6 @@ App har et simpelt state-less flow (Wizard like):
 
 Step 1:
 1. bruger uploader et billede af et rum fra boligannoncen
-1. (Optional) bruger skriver ønsker til rummet, f.eks. en bestemt farvepalette eller målsætning (sælg til rige mennesker, unge mennesker, etc.) i et freetext felt.
-1. (Optional) hvis bruger lige har afsluttet generering af et andet rum (trykker "Nyt rum" på step 4), så er ønsker automatisk udfyldt med noget der holder stilen. 
 1. Bruger trykker "Next"
 
 Step 2:
@@ -36,7 +34,6 @@ Step 4:
 1. Bruger kan downloade via en download-knap. Navn på fil er som default navnet fra trin 2. 
 1. Hvis brugeren ikke kan lide det kan de trykke "Back" og ændre indstillinger
 1. Hvis bruger er tilfredse kan de trykke "Nyt rum", hvilket starter wizard fra step 1.
-    - Ønskefelter bliver automatisk udfyldt så stilen på næste billede er konsistent.
 
 Constraints:
 - App skal bevare rummets dimensioner og strukturelle indretning (vinduer, gulve, døre, vægge, etc.), som det ser ud på original foto.
@@ -51,7 +48,6 @@ Teknisk:
 - Skriv en datamodel for config for anbefalinger
 - Brug GPT til at generere anbefalinger (JSON) fra billede
 - Brug Replicate/nano-banana til at generere det færdige billede
-- Brug GPT til at auto-udfylde ønske felt (Step 1) når bruger trykker "Nyt rum" i step 4.
 - Byg app i Next.js
 - Lav github action der bygger docker image (app bliver senere deployed til Coolify via Docker).
 - Mulighed for at køre lokalt via .env files og npm run local
@@ -61,7 +57,7 @@ Teknisk:
 Mulighed for konfiguration, via environment variables, vises ikke i UI:
 - OPENAI_API_KEY
 - REPLICATE_API_KEY
-- PROMPT template med placeholders for maling, oprydning, indretning, ønsker og hardcoded constraints (svarende til constraints ovenfor).
+- PROMPT template med placeholders for maling, oprydning, indretning og hardcoded constraints (svarende til constraints ovenfor).
 
 
 Out of scope:
