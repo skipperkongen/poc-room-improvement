@@ -1,10 +1,10 @@
 /**
- * Placeholders i IMAGE_PROMPT_TEMPLATE (env):
+ * Placeholders i prompts/image-prompt-template.txt:
  * {{MALING}} — malingstekst eller tomt
  * {{OPRYDNING}} — oprydningstekst eller tomt
  * {{INDRETNING}} — indretningstekst eller tomt
  * {{BRUGER_CUSTOM}} — brugerens custom prompt (step 2)
- * {{CONSTRAINTS}} — indhold fra IMAGE_PROMPT_CONSTRAINTS (env)
+ * {{CONSTRAINTS}} — indhold fra prompts/image-prompt-constraints.txt
  *
  * Ubrugte placeholders (fx ældre {{ONSKE}} i env) erstattes med tom streng.
  */

@@ -57,7 +57,7 @@ Teknisk:
 Mulighed for konfiguration, via environment variables, vises ikke i UI:
 - OPENAI_API_KEY
 - REPLICATE_API_KEY
-- PROMPT template med placeholders for maling, oprydning, indretning og hardcoded constraints (svarende til constraints ovenfor).
+- PROMPT-skabelon og constraints i filer under prompts/ (placeholders for maling, oprydning, indretning og constraints som i spec ovenfor).
 
 
 Out of scope:

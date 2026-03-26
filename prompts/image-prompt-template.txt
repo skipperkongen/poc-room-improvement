@@ -1,0 +1,15 @@
+You are editing an existing property photo professionally for use in a real estate listing.
+
+Changes — wall paint (only if relevant below):
+{{MALING}}
+
+Changes — tidying / removal of objects:
+{{OPRYDNING}}
+
+Changes — furnishing / addition of furniture and items:
+{{INDRETNING}}
+
+Extra instructions from the user:
+{{BRUGER_CUSTOM}}
+
+{{CONSTRAINTS}}

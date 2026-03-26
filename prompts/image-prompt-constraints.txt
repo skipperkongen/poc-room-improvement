@@ -1,0 +1,4 @@
+Preserve the room's dimensions and structural layout (windows, floors, doors, walls) as in the original photo.
+Paint only flat wall surfaces; not crown moulding, skirting, wall panelling, window sills, or similar details. Paint all visible walls.
+Preserve camera angle and aspect ratio of the original photo.
+Ensure colour-coordinated improvements so furniture and walls harmonise.
