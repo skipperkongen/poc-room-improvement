@@ -37,20 +37,14 @@ const PAINT_BY_FAMILY: Map<string, WallPaintColor[]> = (() => {
 })();
 
 function PaintColorSelector({
-  disabled,
   selectedId,
   onSelect,
 }: {
-  disabled: boolean;
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
   return (
-    <div
-      className={`space-y-8 ${disabled ? "pointer-events-none select-none opacity-45" : ""}`}
-      role="group"
-      aria-label="Vælg vægfarve"
-    >
+    <div className="space-y-8" role="group" aria-label="Vælg vægfarve">
       {PAINT_FAMILY_ORDER.map((family) => {
         const colors = PAINT_BY_FAMILY.get(family);
         if (!colors?.length) return null;
@@ -68,7 +62,6 @@ function PaintColorSelector({
                     type="button"
                     onClick={() => onSelect(c.id)}
                     aria-pressed={selected}
-                    disabled={disabled}
                     className={`rounded-lg border border-zinc-200 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:border-zinc-700 ${
                       selected
                         ? "ring-2 ring-emerald-600 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950"
@@ -311,11 +304,9 @@ export function RoomWizard() {
                 />
               </button>
             </div>
-            <PaintColorSelector
-              disabled={!enablePaint}
-              selectedId={selectedPaintId}
-              onSelect={setSelectedPaintId}
-            />
+            {enablePaint && (
+              <PaintColorSelector selectedId={selectedPaintId} onSelect={setSelectedPaintId} />
+            )}
           </div>
 
           <div className="space-y-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
@@ -333,12 +324,13 @@ export function RoomWizard() {
                 />
               </button>
             </div>
-            <textarea
-              className="min-h-[72px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
-              disabled={!enableCleanup}
-              value={cleanupText}
-              onChange={(e) => setCleanupText(e.target.value)}
-            />
+            {enableCleanup && (
+              <textarea
+                className="min-h-[72px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                value={cleanupText}
+                onChange={(e) => setCleanupText(e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-4 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
@@ -356,12 +348,13 @@ export function RoomWizard() {
                 />
               </button>
             </div>
-            <textarea
-              className="min-h-[72px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
-              disabled={!enableFurnishing}
-              value={furnishingText}
-              onChange={(e) => setFurnishingText(e.target.value)}
-            />
+            {enableFurnishing && (
+              <textarea
+                className="min-h-[72px] w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-950"
+                value={furnishingText}
+                onChange={(e) => setFurnishingText(e.target.value)}
+              />
+            )}
           </div>
 
           <label className="flex flex-col gap-2">
